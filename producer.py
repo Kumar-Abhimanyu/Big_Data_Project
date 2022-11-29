@@ -15,7 +15,7 @@ def send_msg():
     msg = input("Enter your message = ")
     msg_json = {"message":msg}
     port_num = "http://localhost:" + str(port_num) + "/test" 
-    res = requests.post("http://localhost:5001/test",json=msg_json)
+    res = requests.post(port_num,json=msg_json)
     return str(res)
 
 if __name__ == "__main__":
