@@ -4,6 +4,7 @@ import json
 from time import strftime
 import shutil
 import requests
+import socket
 
 # Broker 1
 
@@ -102,8 +103,16 @@ def topic_data():
     if (I_am_leader()):
         data_to_send = {'topic' : topic, 'data' : data}
         headers = {'Content-type' : 'application/json'}
-        requests.post('http://localhost:5001/topic_data', json = data_to_send, headers = headers)
-        requests.post('http://localhost:5002/topic_data', json = data_to_send, headers = headers)
+        sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result1 = sock1.connect_ex(('127.0.0.1',5001))
+        if result1 == 0:
+            requests.post('http://localhost:5001/topic_data', json = data_to_send, headers = headers)
+        sock1.close()
+        sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result2 = sock2.connect_ex(('127.0.0.1',5002))
+        if result2 == 0:
+            requests.post('http://localhost:5002/topic_data', json = data_to_send, headers = headers)
+        sock2.close()
 
     topic_folder_path = os.getcwd() + '\\Data\\Broker1\\' + topic
     print(topic_folder_path)
@@ -122,8 +131,16 @@ def delete_topic():
     if (I_am_leader()):
         data_to_send = {'topic_to_delete' : topic_to_delete}
         headers = {'Content-type' : 'application/json'}
-        requests.post('http://localhost:5001/delete_topic', json = data_to_send, headers = headers)
-        requests.post('http://localhost:5002/delete_topic', json = data_to_send, headers = headers)
+        sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result1 = sock1.connect_ex(('127.0.0.1',5001))
+        if result1 == 0:
+            requests.post('http://localhost:5001/delete_topic', json = data_to_send, headers = headers)
+        sock1.close()
+        sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result2 = sock2.connect_ex(('127.0.0.1',5002))
+        if result2 == 0:
+            requests.post('http://localhost:5002/delete_topic', json = data_to_send, headers = headers)
+        sock2.close()
 
     topic_folder_path = os.getcwd() + '\\Data\\Broker1\\' + topic_to_delete
     if (not os.path.isdir(topic_folder_path)):
