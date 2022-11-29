@@ -72,11 +72,32 @@ def insert_data(folder_path, data):
 
 @app.route('/topic_data', methods = ["POST"])
 def topic_data():
+    # request should contain three fields - producer_id, topic, and data
+    # it would help if the consumer id is the same as its port number
     obj = request.json
     print(obj)
 
     topic = obj["topic"]
     data = obj["data"]
+    producer_id = obj["producer_id"]
+
+    # register the producer
+    f = open('active_producers.txt', 'a+')
+    f.seek(0)
+    active_producers = f.read()
+    f.seek(0)
+    f.truncate()
+    list_of_active_producers = []
+    if (active_producers != ''):
+        list_of_active_producers = json.loads(active_producers)
+    
+    if producer_id not in list_of_active_producers:
+        list_of_active_producers.append(producer_id)
+
+    f.write(json.dumps(list_of_active_producers))
+    f.close()
+
+    print("Consumer registered")
 
     if (I_am_leader()):
         data_to_send = {'topic' : topic, 'data' : data}
@@ -89,6 +110,8 @@ def topic_data():
 
     if (not os.path.isdir(topic_folder_path)):
         os.mkdir(topic_folder_path)
+
+    # we can probably send the data to the consumers (if any) here
     
     return insert_data(topic_folder_path, data)
 
@@ -108,6 +131,86 @@ def delete_topic():
     else:
         shutil.rmtree(topic_folder_path)
         return 'Topic Deleted'
+
+@app.route('/dereg_producer', methods = ["POST"])
+def dereg_producer():
+    # request should contain the id of the producer that wants to be de-registered
+    obj = request.json
+    producer_id = obj["producer_id"]
+
+    f = open('active_producers.txt', 'r+')
+    producers = json.loads(f.read())
+    print(producers)
+    producers = [element for element in producers if element != producer_id]
+    f.seek(0)
+    f.truncate()
+    f.write(json.dumps(producers))
+    f.close()
+    return 'Success'
+
+def get_all_data_from_topic(folder_path):
+    data_to_send = []
+    list_of_partitions = [name for name in os.listdir(folder_path)]
+
+    for file in list_of_partitions:
+        f = open(folder_path + '\\' + file, 'r')
+        data_from_file = json.loads(f.read())
+        for element in data_from_file:
+            data_to_send.append(element)
+        f.close()
+    
+    return data_to_send
+
+
+@app.route('/register_consumer', methods = ["POST"])
+def register_consumer():
+    # request sould contain the id of the consumer and the topic they are registering for
+    # it would help if the request id of the consumer is the same as its port number
+    obj = request.json
+    consumer_id = obj["consumer_id"]
+    topic = obj["topic"]
+    print("Inside /register_consumer")
+    # register the consumer
+    f = open('active_consumers.txt', 'a+')
+    f.seek(0)
+    consumers = json.loads(f.read())
+    f.seek(0)
+    f.truncate()
+    consumers.append(consumer_id)
+    f.write(json.dumps(consumers))
+    f.close()
+
+    print("Consumer Registered")
+
+    # send data from the topic to the consumer
+    folder_path = os.getcwd() + '\\Data\\Broker1\\' + topic
+    if (os.path.isdir(folder_path)):
+        data = get_all_data_from_topic(folder_path)
+        data_to_send = {"data": data}
+        headers = {'Content-type' : 'application/json'}
+        print(data_to_send)
+        # requests.post('http://localhost', json = data_to_send, headers = headers)
+    else:
+        os.mkdir(folder_path)
+
+    return 'Success'
+
+@app.route('/unsub', methods = ["POST"])
+def unsub():
+    # request contains consumer_id
+    consumer_id = request.json["consumer_id"]
+    print("Inside /unsub")
+
+    f = open('active_consumers.txt', 'a+')
+    f.seek(0)
+    consumers = json.loads(f.read())
+    f.seek(0)
+    f.truncate()
+    consumers = [element for element in consumers if element != consumer_id]
+    f.write(json.dumps(consumers))
+    f.close()
+
+    return 'Success'
 
 if (__name__ == '__main__'):
     app.run(debug = True, port = 5000)
