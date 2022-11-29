@@ -187,9 +187,10 @@ def register_consumer():
     if (os.path.isdir(folder_path)):
         data = get_all_data_from_topic(folder_path)
         data_to_send = {"data": data}
-        headers = {'Content-type' : 'application/json'}
+        headers = {'Content-Type' : 'application/json'}
         print(data_to_send)
-        # requests.post('http://localhost', json = data_to_send, headers = headers)
+        requests.post('http://localhost:%s/sub/output'%consumer_id, json = data_to_send, headers = headers)
+        print("post request sent")
     else:
         os.mkdir(folder_path)
 
