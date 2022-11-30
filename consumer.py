@@ -3,10 +3,24 @@ import requests
 from time import sleep
 import json
 import logging
+import sys
 
 app = Flask(__name__)
-port = 3000
-leader_port = 5000
+
+port = int(sys.argv[1])
+
+def get_leader_port():
+    f = open('leaders.txt', 'r')
+    leader = f.read().strip()
+    if (leader == '100'):
+        return 5000
+    elif (leader == '010'):
+        return 5001
+    else:
+        return 5002
+
+
+leader_port = get_leader_port()
 sub_list = []
 
 log = logging.getLogger('werkzeug')
@@ -20,6 +34,7 @@ def index():
 def unsubscribe():
     data = {'consumer_id':f'{port}'}
     requests.post('http://localhost:%d/unsub'%leader_port,json = data)
+
     return render_template("unsub.html")
 
 @app.route('/sub',methods = ["GET","POST"])
@@ -38,6 +53,7 @@ def subscribe_server():
 @app.route('/receive_extra_data', methods = ["POST"])
 def receive_extra_data():
     # request should contain only data and topic
+    # print("Inside /receive_extra_data")
     obj = request.json
     topic = obj["topic"]
     data = obj["data"]
