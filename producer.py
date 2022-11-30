@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, redirect
+from matplotlib.pyplot import text
 import requests
 import json
 import logging
@@ -29,11 +30,15 @@ def index():
 def unsubscribe():
     leader_port = get_leader_port()
     data = {'producer_id':f'{port}'}
-    requests.post('http://localhost:%d/dereg_producer'%leader_port,json = data, headers=headers)
-    return render_template("unsub_producer.html")
+    x = requests.post('http://localhost:%d/dereg_producer'%leader_port,json = data, headers=headers)
+    return x.text
 
-@app.route('/unsub/serv',methods=["GET","POST"])
-def unsub_serv():
+@app.route('/delete_topic',methods=["GET","POST"])
+def delete_topic():
+    return render_template("delete_topic.html")
+
+@app.route('/delete_topic/serv',methods=["GET","POST"])
+def delete_topic_serv():
     leader_port = get_leader_port()
     topic = request.form["topic"]
     data = {'topic_to_delete':topic}
