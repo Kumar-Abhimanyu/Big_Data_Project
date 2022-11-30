@@ -197,6 +197,7 @@ def register_consumer():
     obj = request.json
     consumer_id = obj["consumer_id"]
     topic = obj["topic"]
+    from_beginning = obj["from_beginning"]
     print("Inside /register_consumer")
     # register the consumer
     f = open('active_consumers.txt', 'a+')
@@ -212,7 +213,7 @@ def register_consumer():
 
     # send data from the topic to the consumer
     folder_path = os.getcwd() + '\\Data\\Broker1\\' + topic
-    if (os.path.isdir(folder_path)):
+    if (os.path.isdir(folder_path) and from_beginning == 'True'):
         data = get_all_data_from_topic(folder_path)
         data_to_send = {"data": data}
         headers = {'Content-Type' : 'application/json'}

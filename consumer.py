@@ -44,7 +44,8 @@ def subscribe():
 @app.route('/sub/server',methods = ["GET","POST"])
 def subscribe_server():
     topic = request.form['topic']
-    data = {'topic':topic,'consumer_id':f'{port}'}
+    from_beginning = request.form['from_beginning']
+    data = {'topic':topic,'consumer_id':f'{port}', 'from_beginning' : from_beginning}
     headers = {'Content-Type' : 'application/json'}
     x = requests.post('http://localhost:%d/register_consumer'%leader_port,json = data,headers = headers)
     print(x.json()["data"])
