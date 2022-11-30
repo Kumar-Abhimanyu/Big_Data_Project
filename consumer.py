@@ -48,7 +48,8 @@ def subscribe_server():
     data = {'topic':topic,'consumer_id':f'{port}', 'from_beginning' : from_beginning}
     headers = {'Content-Type' : 'application/json'}
     x = requests.post('http://localhost:%d/register_consumer'%leader_port,json = data,headers = headers)
-    print(x.json()["data"])
+    if (from_beginning == 'True'):
+        print(x.json()["data"])
     return 'Check Terminal'
 
 @app.route('/receive_extra_data', methods = ["POST"])

@@ -9,7 +9,7 @@
 <body>
     <form align = "center" method = "POST" action = "{{url_for('subscribe_server')}}">
         Topic Name: <input type = "text" name = "topic"></input>
-        --from-beginning(True or False): <input type = 'text' name = "from_beginning" placeholder="False"></input>
+        --from-beginning(True or False): <input type = 'text' name = "from_beginning" placeholder="False" value = "False"></input>
         <input type = "submit" value = "Enter">
     </form>
     <p id = 'data'>{{data}}</p>
