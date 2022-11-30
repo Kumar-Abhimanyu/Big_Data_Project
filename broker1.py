@@ -10,7 +10,6 @@ import socket
 
 app = Flask(__name__)
 
-
 def I_am_leader():
     f = open('leaders.txt')
     data = f.read()
@@ -109,7 +108,7 @@ def topic_data():
             requests.post('http://localhost:5001/topic_data', json = data_to_send, headers = headers)
         sock1.close()
         sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result2 = sock2.connect_ex(('127.0.0.1',5002))
+        result2 = sock2.connect_ex(('127.0.0.1', 5002))
         if result2 == 0:
             requests.post('http://localhost:5002/topic_data', json = data_to_send, headers = headers)
         sock2.close()
@@ -121,7 +120,19 @@ def topic_data():
         os.mkdir(topic_folder_path)
 
     # we can probably send the data to the consumers (if any) here
+    f = open('active_consumers.txt', 'r')
+    active_consumers = f.read()
+    if (active_consumers != ''):
+        active_consumers = json.loads(active_consumers)
+        for consumer, subscribed_topic in active_consumers:
+            if (subscribed_topic == topic):
+                data_to_send = {"data": data, "topic" : topic}
+                headers = {'Content-Type' : 'application/json'}
+                # check if port is free before sending
+                requests.post('http://localhost:%s/receive_extra_data'%consumer, json = data_to_send, headers = headers)
     
+    f.close()
+
     return insert_data(topic_folder_path, data)
 
 @app.route('/delete_topic', methods = ["POST"])
@@ -193,7 +204,7 @@ def register_consumer():
     consumers = json.loads(f.read())
     f.seek(0)
     f.truncate()
-    consumers.append(consumer_id)
+    consumers.append((consumer_id, topic))
     f.write(json.dumps(consumers))
     f.close()
 
@@ -206,8 +217,9 @@ def register_consumer():
         data_to_send = {"data": data}
         headers = {'Content-Type' : 'application/json'}
         print(data_to_send)
-        requests.post('http://localhost:%s/sub/output'%consumer_id, json = data_to_send, headers = headers)
-        print("post request sent")
+        return json.dumps(data_to_send)
+        # requests.post('http://localhost:%s/sub/output'%consumer_id, json = data_to_send, headers = headers)
+        # print("post request sent")
     else:
         os.mkdir(folder_path)
 
@@ -217,6 +229,7 @@ def register_consumer():
 def unsub():
     # request contains consumer_id
     consumer_id = request.json["consumer_id"]
+    print(consumer_id)
     print("Inside /unsub")
 
     f = open('active_consumers.txt', 'a+')
@@ -224,7 +237,8 @@ def unsub():
     consumers = json.loads(f.read())
     f.seek(0)
     f.truncate()
-    consumers = [element for element in consumers if element != consumer_id]
+    consumers = [element for element in consumers if element[0] != consumer_id]
+    print(consumers)
     f.write(json.dumps(consumers))
     f.close()
 
