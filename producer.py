@@ -1,25 +1,42 @@
-from flask import Flask, request
+from flask import Flask, request, render_template, redirect
 import requests
+import json
+import logging
+
+port = 3000
+leader_port = 5000
+headers = {'Content-Type' : 'application/json'}
+
 app = Flask(__name__)
 
-@app.route("/")
-def send_msg():
-    f = open('leaders.txt')
-    data = f.read()
-    if(data=='100'):
-        port_num = 5000
-    elif(data=='010'):
-        port_num = 5001
-    elif(data=='001'):
-        port_num = 5002
-    msg = input("Enter your message = ")
-    msg_json = {"message":msg}
-    port_num = "http://localhost:" + str(port_num) + "/test" 
-    res = requests.post(port_num,json=msg_json)
-    return str(res)
+@app.route('/')
+def index():
+    return render_template("index_p.html")
 
-if __name__ == "__main__":
-    app.run(host="localhost", port=5003, debug=True)
+@app.route('/unsub', methods= ["GET", "POST"])
+def unsubscribe():
+    data = {'producer_id':f'{port}'}
+    requests.post('http://localhost:%d/dereg_producer'%leader_port,json = data, headers=headers)
+    return render_template("unsub_producer.html")
+
+@app.route('/unsub/serv',methods=["GET","POST"])
+def unsub_serv():
+    topic = request.form["topic"]
+    data = {'topic':topic}
+    requests.post('http://localhost:%d/delete_topic'%leader_port,json = data, headers= headers)
+    return "Topic Deleted"
+
+@app.route('/send_data', methods=["GET","POST"])
+def send_data():
+    return render_template("data_send.html")
+
+@app.route('/send_data/serv',methods = ["GET","POST"])
+def data_send_serv():
+    topic = request.form["topic"]
+    data = request.form["data"]
+    data_to_send = {'topic':topic,'data':data,'producer_id':port}
+    requests.post('http://localhost:%d/topic_data'%leader_port,json = data_to_send,headers=headers)
+    return "Data Sent"
 
 
-    
+app.run()
