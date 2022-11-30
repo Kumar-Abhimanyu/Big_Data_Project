@@ -3,7 +3,7 @@ import requests
 import json
 import logging
 
-port = 3000
+port = 5005
 leader_port = 5000
 headers = {'Content-Type' : 'application/json'}
 
@@ -22,7 +22,7 @@ def unsubscribe():
 @app.route('/unsub/serv',methods=["GET","POST"])
 def unsub_serv():
     topic = request.form["topic"]
-    data = {'topic':topic}
+    data = {'topic_to_delete':topic}
     requests.post('http://localhost:%d/delete_topic'%leader_port,json = data, headers= headers)
     return "Topic Deleted"
 
@@ -39,4 +39,4 @@ def data_send_serv():
     return "Data Sent"
 
 
-app.run()
+app.run(debug = True, port = port)
