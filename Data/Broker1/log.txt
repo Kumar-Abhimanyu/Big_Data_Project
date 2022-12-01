@@ -1,0 +1,14 @@
+[2022-Dec-01 07:39] localhost:5000 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:40] localhost:5000 127.0.0.1 POST http /register_consumer? 200 OK
+[2022-Dec-01 07:40] localhost:5000 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:41] localhost:5000 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:45] localhost:5000 127.0.0.1 POST http /unsub? 200 OK
+[2022-Dec-01 07:45] localhost:5000 127.0.0.1 POST http /unsub? 200 OK
+[2022-Dec-01 07:47] localhost:5000 127.0.0.1 POST http /register_consumer? 200 OK
+[2022-Dec-01 07:47] localhost:5000 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:48] localhost:5000 127.0.0.1 POST http /unsub? 200 OK
+[2022-Dec-01 07:48] localhost:5000 127.0.0.1 POST http /register_consumer? 200 OK
+[2022-Dec-01 07:50] localhost:5000 127.0.0.1 POST http /register_consumer? 200 OK
+[2022-Dec-01 07:51] localhost:5000 127.0.0.1 POST http /register_consumer? 200 OK
+[2022-Dec-01 08:05] localhost:5000 127.0.0.1 POST http /create_new_topic? 200 OK
+[2022-Dec-01 08:06] localhost:5000 127.0.0.1 POST http /topic_data? 200 OK

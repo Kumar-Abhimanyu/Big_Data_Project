@@ -48,6 +48,7 @@ def subscribe_server():
     data = {'topic':topic,'consumer_id':f'{port}', 'from_beginning' : from_beginning}
     headers = {'Content-Type' : 'application/json'}
     x = requests.post('http://localhost:%d/register_consumer'%leader_port,json = data,headers = headers)
+    # print(x.json())
     if (from_beginning == 'True'):
         print(x.json()["data"])
     return 'Check Terminal'

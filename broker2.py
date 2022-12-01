@@ -220,8 +220,21 @@ def register_consumer():
         return json.dumps(data_to_send)
         # requests.post('http://localhost:%s/sub/output'%consumer_id, json = data_to_send, headers = headers)
         # print("post request sent")
-    else:
+    elif (not os.path.isdir(folder_path)):
         os.mkdir(folder_path)
+        headers = {'Content-Type' : 'application/json'}
+        data_to_send = {"topic" : topic}
+        sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result1 = sock1.connect_ex(('127.0.0.1', 5002))
+        if result1 == 0:
+            requests.post('http://localhost:5002/create_new_topic', json = data_to_send, headers = headers)
+        sock1.close()
+        sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result2 = sock2.connect_ex(('127.0.0.1', 5000))
+        if result2 == 0:
+            requests.post('http://localhost:5000/create_new_topic', json = data_to_send, headers = headers)
+        sock2.close()
+        return json.dumps({"data": []})
 
     return 'Success'
 
@@ -242,6 +255,13 @@ def unsub():
     f.write(json.dumps(consumers))
     f.close()
 
+    return 'Success'
+
+@app.route('/create_new_topic', methods = ["POST"])
+def create_new_topic():
+    topic = request.json["topic"]
+    folder_path = os.getcwd() + '\\Data\\Broker2\\' + topic
+    os.mkdir(folder_path)
     return 'Success'
 
 if (__name__ == '__main__'):
