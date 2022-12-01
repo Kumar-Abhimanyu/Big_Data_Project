@@ -1,0 +1,7 @@
+[2022-Dec-01 07:39] 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:40] 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:41] 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:47] 127.0.0.1 POST http /topic_data? 200 OK
+[2022-Dec-01 07:55] 127.0.0.1 POST http /register_consumer? 200 OK
+[2022-Dec-01 08:05] 127.0.0.1 POST http /create_new_topic? 200 OK
+[2022-Dec-01 08:06] 127.0.0.1 POST http /topic_data? 200 OK
