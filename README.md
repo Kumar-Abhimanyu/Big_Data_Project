@@ -18,4 +18,6 @@ python consumer.py "port"<br>
 <br><br>
 (can run multiple producers and consumers on different ports if necessary)<br><br>
 
+In order to perform producer or consumer operations like publish, or subscribe, go to localhost:[port]<br><br>
+
 NOTE: before exiting consumer and producer, remember to deregister producer and unsubscribe the consumer
