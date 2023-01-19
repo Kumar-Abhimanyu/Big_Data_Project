@@ -1,6 +1,6 @@
 # BD1_009_055_197_224
 
-Project Title : Yet Another Kafka
+Project Title : Yet Another Kafka, developed in Python.
 
 To run:
 
